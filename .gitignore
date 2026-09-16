@@ -79,6 +79,11 @@ web_modules/
 .env.production.local
 .env.local
 
+# stato locale del bot (diff notifiche) e file di ricognizione
+state.json
+probe*.mjs
+*.html
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

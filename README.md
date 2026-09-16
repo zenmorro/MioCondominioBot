@@ -1,0 +1,101 @@
+# MioCondominioBot
+
+Bot Telegram che monitora il portale [miocondominio.eu](https://www.miocondominio.eu) e:
+
+- 📋 permette di **consultare** scadenze, guasti e documenti tramite un **menu a bottoni** (navigazione avanti/indietro senza rifare `/start`);
+- 🔔 **notifica** in automatico nuovi guasti, cambi di stato, nuovi documenti e nuove scadenze;
+- 📄 su richiesta o dalla notifica **scarica il PDF, lo invia in chat e lo elimina** subito dalla macchina.
+
+Funziona con **sole richieste HTTP** (nessun browser): login con cookie di sessione + scraping delle pagine ASP.
+
+## Anteprima
+
+<p align="center">
+  <img src="docs/mockup-menu.svg" alt="Menu a bottoni del bot" width="270">
+  &nbsp;&nbsp;&nbsp;
+  <img src="docs/mockup-notifiche.svg" alt="Notifiche di guasto e nuovo documento" width="270">
+</p>
+
+<p align="center"><em>A sinistra il menu (<code>/start</code>); a destra le notifiche con il pulsante «Scarica». Dati di esempio.</em></p>
+
+<p align="center">
+  <img src="docs/mockup-documenti.svg" alt="Vista Documenti: file di una cartella con paginazione" width="270">
+</p>
+
+<p align="center"><em>Vista Documenti: cartella aperta con l'elenco dei file, paginazione e i pulsanti «Cartelle» / «Menu». Dati di esempio.</em></p>
+
+## Prerequisiti Telegram
+
+### 1) Creare il bot con BotFather
+
+1. In Telegram apri la chat con **[@BotFather](https://t.me/BotFather)** (spunta blu) e premi **Avvia**.
+2. Invia il comando **`/newbot`**.
+3. Scegli un **nome** visibile (es. `MioCondominio`).
+4. Scegli uno **username** che deve finire per `bot` (es. `MioCondominio_Buragobot`); dev'essere univoco.
+5. BotFather risponde con il **token**, nel formato `123456789:AA...`. Copialo in `TELEGRAM_TOKEN_BOT` dentro il `.env`.
+
+> ⚠️ Il token è come una password: non condividerlo e non metterlo su GitHub (il `.env` è già escluso).
+> Se lo esponi per errore, usa `/revoke` su BotFather per generarne uno nuovo.
+
+Comandi utili di BotFather (facoltativi): `/setdescription`, `/setuserpic`, `/mybots`.
+
+### 2) Trovare il proprio Telegram ID
+
+Serve il tuo **id numerico** (non lo username) da mettere in `TELEGRAM_ID_OWNER`.
+
+1. In Telegram apri la chat con **[@userinfobot](https://t.me/userinfobot)** e premi **Avvia**.
+2. Ti risponde subito con il tuo **Id** (es. `574520558`).
+3. Incollalo in `TELEGRAM_ID_OWNER`.
+
+Per abilitare **più persone**, chiedi a ciascuna il proprio id e mettili separati da virgola:
+
+```
+TELEGRAM_ID_OWNER='574520558,123456789,987654321'
+```
+
+Tutti gli id elencati potranno usare il menu **e** riceveranno le notifiche. Chiunque altro riceve «Non autorizzato».
+
+> Suggerimento: dopo aver avviato il bot, ogni persona abilitata deve premere **Avvia**/`/start`
+> nella chat del bot almeno una volta, altrimenti Telegram non gli recapita i messaggi.
+
+## Configurazione
+
+Tutto sta nel file `.env` (già presente, **non** versionato):
+
+```
+URL='https://www.miocondominio.eu/'
+PORTAL_PID='...'            # codice condominio (pid)
+PORTAL_USER='...'           # codice utente (login)
+PORTAL_PASSWORD='...'       # password (case-sensitive)
+TELEGRAM_TOKEN_BOT='...'    # token da @BotFather
+TELEGRAM_ID_OWNER='...'     # uno o più id abilitati, separati da virgola: 111,222,333
+POLL_MINUTES='15'           # opzionale: ogni quanti minuti controllare (default 15)
+```
+
+Trovi un modello pronto in [`.env.example`](.env.example). In `TELEGRAM_ID_OWNER` puoi
+mettere **più id separati da virgola**: tutti potranno usare il bot e riceveranno le notifiche.
+
+## Avvio
+
+```bash
+npm install
+npm start
+```
+
+- Al **primo avvio** il bot salva una *baseline* (`state.json`) senza inviare notifiche, così non ricevi tutto lo storico in una volta. Dai controlli successivi notifica solo le novità.
+- In Telegram usa `/start` per aprire il menu. I bottoni navigano modificando lo stesso messaggio; **⬅️** torna indietro.
+- `🔄 Controlla aggiornamenti` forza subito un controllo.
+
+## Come funziona (in breve)
+
+| File | Ruolo |
+|------|-------|
+| `src/portal.js` | login, sessione, parsing pagine, download documenti |
+| `src/state.js`  | snapshot + persistenza per il confronto (diff) |
+| `src/bot.js`    | menu a bottoni, notifiche, scheduler |
+| `index.js`      | avvio |
+
+Pagine monitorate: `rate.asp` (scadenze), `segnalazioni.asp` (guasti), `documenti.asp` (documenti).
+
+> Nota: le tabelle delle **scadenze** sono attualmente vuote sul portale; il diff sulle rate
+> è generico e potrà essere affinato quando compariranno rate reali.

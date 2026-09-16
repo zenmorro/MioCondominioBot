@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 780" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <clipPath id="screen3"><rect x="20" y="20" width="340" height="740" rx="42"/></clipPath>
+    <filter id="sh3" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#00000022"/>
+    </filter>
+  </defs>
+
+  <rect x="8" y="8" width="364" height="764" rx="52" fill="#0b0b0c"/>
+
+  <g clip-path="url(#screen3)">
+    <rect x="20" y="20" width="340" height="740" fill="#ffffff"/>
+    <rect x="20" y="100" width="340" height="600" fill="#c9dcec"/>
+    <line x1="20" y1="100" x2="360" y2="100" stroke="#e2e2e2" stroke-width="1"/>
+
+    <!-- message bubble -->
+    <rect x="34" y="118" width="270" height="68" rx="16" fill="#ffffff" filter="url(#sh3)"/>
+    <text x="50" y="146" font-size="14" font-weight="700" fill="#111">📁 Verbali assemblea</text>
+    <text x="50" y="172" font-size="12" fill="#666">Pagina 1/2 — tocca un file per riceverlo</text>
+
+    <!-- inline keyboard: file + navigazione -->
+    <rect x="34" y="196" width="270" height="270" rx="14" fill="#ffffff" fill-opacity="0.95" filter="url(#sh3)"/>
+
+    <text x="50" y="220" font-size="12.5" fill="#2b7cd3">📄 Verbale_2026-03-12.pdf</text>
+    <line x1="34" y1="234" x2="304" y2="234" stroke="#ececec"/>
+    <text x="50" y="258" font-size="12.5" fill="#2b7cd3">📄 Bilancio_consuntivo_2025.pdf</text>
+    <line x1="34" y1="272" x2="304" y2="272" stroke="#ececec"/>
+    <text x="50" y="296" font-size="12.5" fill="#2b7cd3">📄 Regolamento_condominiale.pdf</text>
+    <line x1="34" y1="310" x2="304" y2="310" stroke="#ececec"/>
+    <text x="50" y="334" font-size="12.5" fill="#2b7cd3">📄 Avviso_riunione_marzo.pdf</text>
+    <line x1="34" y1="348" x2="304" y2="348" stroke="#ececec"/>
+    <text x="50" y="372" font-size="12.5" fill="#2b7cd3">📄 Preventivo_ascensore.pdf</text>
+
+    <!-- riga navigazione pagina -->
+    <line x1="34" y1="386" x2="304" y2="386" stroke="#ececec"/>
+    <text x="169" y="411" font-size="14" fill="#2b7cd3" text-anchor="middle">➡️</text>
+
+    <!-- riga: Cartelle | Menu -->
+    <line x1="34" y1="426" x2="304" y2="426" stroke="#ececec"/>
+    <line x1="169" y1="426" x2="169" y2="466" stroke="#ececec"/>
+    <text x="101" y="451" font-size="13" fill="#2b7cd3" text-anchor="middle">📂 Cartelle</text>
+    <text x="237" y="451" font-size="13" fill="#2b7cd3" text-anchor="middle">🏠 Menu</text>
+
+    <!-- input bar -->
+    <rect x="20" y="700" width="340" height="60" fill="#ffffff"/>
+    <rect x="40" y="716" width="250" height="30" rx="15" fill="#f0f0f0"/>
+    <text x="54" y="736" fill="#9aa0a6" font-size="13">Messaggio…</text>
+    <circle cx="322" cy="731" r="16" fill="#4aa3df"/>
+    <path d="M316 731 l10 -5 -3 5 3 5 z" fill="#fff"/>
+  </g>
+
+  <rect x="140" y="20" width="100" height="26" rx="13" fill="#0b0b0c"/>
+  <text x="40" y="42" font-size="13" font-weight="600" fill="#111">9:41</text>
+  <text x="332" y="42" font-size="12" fill="#111" text-anchor="end">◗ 🔋</text>
+
+  <text x="34" y="83" font-size="22" fill="#2b7cd3">‹</text>
+  <circle cx="66" cy="76" r="16" fill="#4aa3df"/>
+  <text x="66" y="81" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">MC</text>
+  <text x="92" y="72" font-size="14" font-weight="700" fill="#111">MioCondominio Bot</text>
+  <text x="92" y="88" font-size="11" fill="#8a8f94">bot</text>
+</svg>

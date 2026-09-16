@@ -1,0 +1,26 @@
+{
+  "name": "miocondominiobot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zenmorro/MioCondominioBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/zenmorro/MioCondominioBot/issues"
+  },
+  "homepage": "https://github.com/zenmorro/MioCondominioBot#readme",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "grammy": "^1.46.0"
+  }
+}
