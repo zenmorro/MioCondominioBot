@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { config } from './config.js';
 import { portal } from './portal.js';
 import { loadState, saveState, buildSnapshot } from './state.js';
+import { sendWhatsApp, toPlainText, whatsappEnabled } from './whatsapp.js';
 
 const FILES_PER_PAGE = 8;
 
@@ -152,21 +153,28 @@ async function runCheck(bot, { notify }) {
       )
     );
 
-  // --- Guasti: nuovi + cambi di stato ---
+  // Invia la notifica su Telegram (con HTML/bottoni) e, se configurato,
+  // anche su WhatsApp come testo semplice.
+  const sendAll = async (text, kb) => {
+    await send(text, kb);
+    if (whatsappEnabled) await sendWhatsApp(toPlainText(text));
+  };
+
+  // --- Guasti: nuovi + cambi di stato --- (anche su WhatsApp)
   for (const s of seg) {
     const before = prev.seg?.[s.id];
     if (!before) {
       changes++;
       if (notify)
-        await send(`🔴 <b>Nuovo guasto/segnalazione</b>\n\n<b>${esc(s.titolo)}</b>\n${esc(s.tipo)} · aperto ${esc(s.aperto)}\nStato: ${esc(s.stato)}`);
+        await sendAll(`🔴 <b>Nuovo guasto/segnalazione</b>\n\n<b>${esc(s.titolo)}</b>\n${esc(s.tipo)} · aperto ${esc(s.aperto)}\nStato: ${esc(s.stato)}`);
     } else if (before.stato !== s.stato) {
       changes++;
       if (notify)
-        await send(`🔧 <b>Aggiornamento guasto</b>\n\n<b>${esc(s.titolo)}</b>\n${esc(before.stato)} → <b>${esc(s.stato)}</b>`);
+        await sendAll(`🔧 <b>Aggiornamento guasto</b>\n\n<b>${esc(s.titolo)}</b>\n${esc(before.stato)} → <b>${esc(s.stato)}</b>`);
     }
   }
 
-  // --- Documenti: nuovi file (con bottone Scarica) ---
+  // --- Documenti: nuovi file (con bottone Scarica) --- (anche su WhatsApp)
   for (const [key, doc] of Object.entries(snapshot.docs)) {
     if (!prev.docs?.[key]) {
       changes++;
@@ -174,7 +182,11 @@ async function runCheck(bot, { notify }) {
         const token = String(++dlSeq);
         dlCache.set(token, { name: doc.name, query: doc.query });
         const kb = new InlineKeyboard().text('⬇️ Scarica', `dl:${token}`);
-        await send(`📄 <b>Nuovo documento</b>\n\n📁 ${esc(doc.folder)}\n${esc(doc.name)}`, kb);
+        const text = `📄 <b>Nuovo documento</b>\n\n📁 ${esc(doc.folder)}\n${esc(doc.name)}`;
+        await send(text, kb);
+        // Su WhatsApp non ci sono bottoni: rimando al bot Telegram per scaricarlo.
+        if (whatsappEnabled)
+          await sendWhatsApp(`${toPlainText(text)}\n\nApri il bot Telegram per scaricarlo.`);
       }
     }
   }
@@ -291,6 +303,11 @@ export function startBot() {
   bot.start({
     onStart: () => {
       console.log(`Bot avviato. Controllo ogni ${config.pollMinutes} min.`);
+      console.log(
+        whatsappEnabled
+          ? `Notifiche WhatsApp attive (OpenWA) verso ${config.whatsapp.recipients.length} destinatario/i.`
+          : 'Notifiche WhatsApp disattivate (OpenWA non configurato nel .env).'
+      );
       scheduleChecks();
     },
   });

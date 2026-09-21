@@ -4,7 +4,8 @@ Bot Telegram che monitora il portale [miocondominio.eu](https://www.miocondomini
 
 - 📋 permette di **consultare** scadenze, guasti e documenti tramite un **menu a bottoni** (navigazione avanti/indietro senza rifare `/start`);
 - 🔔 **notifica** in automatico nuovi guasti, cambi di stato, nuovi documenti e nuove scadenze;
-- 📄 su richiesta o dalla notifica **scarica il PDF, lo invia in chat e lo elimina** subito dalla macchina.
+- 📄 su richiesta o dalla notifica **scarica il PDF, lo invia in chat e lo elimina** subito dalla macchina;
+- 🟢 (opzionale) invia le notifiche di **nuovi documenti** e **guasti** anche su **WhatsApp** tramite [OpenWA](https://github.com/rmyndharis/OpenWA).
 
 Funziona con **sole richieste HTTP** (nessun browser): login con cookie di sessione + scraping delle pagine ASP.
 
@@ -75,6 +76,30 @@ POLL_MINUTES='15'           # opzionale: ogni quanti minuti controllare (default
 Trovi un modello pronto in [`.env.example`](.env.example). In `TELEGRAM_ID_OWNER` puoi
 mettere **più id separati da virgola**: tutti potranno usare il bot e riceveranno le notifiche.
 
+### Notifiche WhatsApp (opzionale, via OpenWA)
+
+Oltre a Telegram, il bot può inviare le notifiche di **nuovi documenti** e **guasti/segnalazioni**
+(nuovi e cambi di stato) anche su **WhatsApp**, usando un'istanza di
+[OpenWA](https://github.com/rmyndharis/OpenWA) già installata e collegata (es. su `100.80.141.19`).
+
+Aggiungi nel `.env`:
+
+```
+OPENWA_URL='http://100.80.141.19:2785'   # indirizzo dell'istanza OpenWA (porta default 2785)
+OPENWA_API_KEY='...'                     # API key dalla dashboard OpenWA (header X-API-Key)
+OPENWA_SESSION='default'                 # nome della sessione OpenWA, già creata e avviata
+OPENWA_RECIPIENTS='393331234567'         # destinatari, separati da virgola
+```
+
+- I destinatari possono essere **numeri** con prefisso internazionale senza `+`
+  (es. `393331234567`) oppure `chatId` completi (`393331234567@c.us`, o un gruppo `<id>@g.us`).
+- Se **anche uno solo** di questi valori è vuoto, le notifiche WhatsApp restano **disattivate**
+  e Telegram continua a funzionare normalmente. All'avvio il bot stampa lo stato (attive/disattivate).
+- Su WhatsApp i messaggi sono **solo testo** (niente bottoni): per i nuovi documenti la notifica
+  rimanda al bot Telegram per lo scaricamento del PDF.
+- La sessione OpenWA (`OPENWA_SESSION`) va creata e avviata dalla dashboard di OpenWA scansionando
+  il QR con il telefono, **prima** di avviare il bot.
+
 ## Avvio
 
 ```bash
@@ -93,6 +118,7 @@ npm start
 | `src/portal.js` | login, sessione, parsing pagine, download documenti |
 | `src/state.js`  | snapshot + persistenza per il confronto (diff) |
 | `src/bot.js`    | menu a bottoni, notifiche, scheduler |
+| `src/whatsapp.js` | invio notifiche WhatsApp via OpenWA (opzionale) |
 | `index.js`      | avvio |
 
 Pagine monitorate: `rate.asp` (scadenze), `segnalazioni.asp` (guasti), `documenti.asp` (documenti).
