@@ -85,10 +85,11 @@ export async function sendWhatsAppDocument(buffer, filename, caption = '') {
 // Invia lo stesso testo a tutti i destinatari configurati.
 // Non lancia eccezioni: eventuali errori vengono solo loggati, per non
 // interrompere l'invio delle notifiche Telegram.
+// Ritorna un riepilogo { total, ok, failures:[{recipient,error}] }.
 export async function sendWhatsApp(text) {
-  if (!wa.enabled) return;
+  if (!wa.enabled) return { total: 0, ok: 0, failures: [] };
   const url = `${wa.baseUrl}/api/sessions/${encodeURIComponent(wa.session)}/messages/send-text`;
-  await Promise.all(
+  const results = await Promise.all(
     wa.recipients.map(async (recipient) => {
       try {
         const res = await fetch(url, {
@@ -101,11 +102,17 @@ export async function sendWhatsApp(text) {
         });
         if (!res.ok) {
           const body = await res.text().catch(() => '');
-          console.error(`WhatsApp: invio a ${recipient} fallito (HTTP ${res.status}) ${body.slice(0, 200)}`);
+          const error = `HTTP ${res.status} ${body.slice(0, 200)}`.trim();
+          console.error(`WhatsApp: invio a ${recipient} fallito (${error})`);
+          return { recipient, error };
         }
+        return { recipient, error: null };
       } catch (e) {
         console.error(`WhatsApp: invio a ${recipient} fallito:`, e.message);
+        return { recipient, error: e.message };
       }
     })
   );
+  const failures = results.filter((r) => r.error);
+  return { total: results.length, ok: results.length - failures.length, failures };
 }

@@ -245,6 +245,26 @@ export function startBot() {
     await ctx.reply(text, { parse_mode: 'HTML', reply_markup: kb });
   });
 
+  // Test rapido delle notifiche WhatsApp verso i destinatari configurati.
+  bot.command('testwa', async (ctx) => {
+    if (!whatsappEnabled) {
+      await ctx.reply('⚠️ Notifiche WhatsApp disattivate: configura OPENWA_* nel .env.');
+      return;
+    }
+    const note = await ctx.reply('⏳ Invio messaggio di test su WhatsApp…');
+    const res = await sendWhatsApp('🔔 Test notifica MioCondominio');
+    let msg;
+    if (res.ok === res.total) {
+      msg = `✅ Test inviato a ${res.ok}/${res.total} destinatario/i WhatsApp.`;
+    } else {
+      const dett = res.failures.map((f) => `• ${esc(f.recipient)}: ${esc(f.error)}`).join('\n');
+      msg = `⚠️ Inviato a ${res.ok}/${res.total}. Falliti:\n${dett}`;
+    }
+    await ctx.api
+      .editMessageText(ctx.chat.id, note.message_id, msg, { parse_mode: 'HTML' })
+      .catch(() => ctx.reply(msg, { parse_mode: 'HTML' }));
+  });
+
   // Naviga editando lo stesso messaggio (back senza rifare /start)
   async function navigate(ctx, view) {
     const { text, kb } = view;

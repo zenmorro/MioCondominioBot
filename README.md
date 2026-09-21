@@ -102,6 +102,8 @@ OPENWA_MAX_MB='64'                       # opzionale: dimensione max allegato su
 - Per i **guasti** i messaggi sono di solo testo (niente bottoni).
 - La sessione OpenWA (`OPENWA_SESSION`) va creata e avviata dalla dashboard di OpenWA scansionando
   il QR con il telefono, **prima** di avviare il bot.
+- Per **verificare la configurazione** invia il comando `/testwa` al bot Telegram: manda
+  «🔔 Test notifica MioCondominio» ai destinatari WhatsApp e riporta in chat esito ed eventuali errori.
 
 ## Avvio
 
