@@ -89,14 +89,17 @@ OPENWA_URL='http://100.80.141.19:2785'   # indirizzo dell'istanza OpenWA (porta 
 OPENWA_API_KEY='...'                     # API key dalla dashboard OpenWA (header X-API-Key)
 OPENWA_SESSION='default'                 # nome della sessione OpenWA, già creata e avviata
 OPENWA_RECIPIENTS='393331234567'         # destinatari, separati da virgola
+OPENWA_MAX_MB='64'                       # opzionale: dimensione max allegato su WhatsApp (default 64)
 ```
 
 - I destinatari possono essere **numeri** con prefisso internazionale senza `+`
   (es. `393331234567`) oppure `chatId` completi (`393331234567@c.us`, o un gruppo `<id>@g.us`).
 - Se **anche uno solo** di questi valori è vuoto, le notifiche WhatsApp restano **disattivate**
   e Telegram continua a funzionare normalmente. All'avvio il bot stampa lo stato (attive/disattivate).
-- Su WhatsApp i messaggi sono **solo testo** (niente bottoni): per i nuovi documenti la notifica
-  rimanda al bot Telegram per lo scaricamento del PDF.
+- Per i **nuovi documenti** il bot allega direttamente il file su WhatsApp se rientra nel limite
+  di `OPENWA_MAX_MB` (default 64 MB, WhatsApp arriva a ~100 MB); oltre quella soglia — o se il
+  download fallisce — invia solo la notifica testuale rimandando al bot Telegram per scaricarlo.
+- Per i **guasti** i messaggi sono di solo testo (niente bottoni).
 - La sessione OpenWA (`OPENWA_SESSION`) va creata e avviata dalla dashboard di OpenWA scansionando
   il QR con il telefono, **prima** di avviare il bot.
 

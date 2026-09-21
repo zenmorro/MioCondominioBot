@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { config } from './config.js';
 import { portal } from './portal.js';
 import { loadState, saveState, buildSnapshot } from './state.js';
-import { sendWhatsApp, toPlainText, whatsappEnabled } from './whatsapp.js';
+import { sendWhatsApp, sendWhatsAppDocument, toPlainText, whatsappEnabled, whatsappMaxBytes } from './whatsapp.js';
 
 const FILES_PER_PAGE = 8;
 
@@ -184,9 +184,24 @@ async function runCheck(bot, { notify }) {
         const kb = new InlineKeyboard().text('⬇️ Scarica', `dl:${token}`);
         const text = `📄 <b>Nuovo documento</b>\n\n📁 ${esc(doc.folder)}\n${esc(doc.name)}`;
         await send(text, kb);
-        // Su WhatsApp non ci sono bottoni: rimando al bot Telegram per scaricarlo.
-        if (whatsappEnabled)
-          await sendWhatsApp(`${toPlainText(text)}\n\nApri il bot Telegram per scaricarlo.`);
+        // Su WhatsApp allego il file se rientra nel limite, altrimenti solo il testo.
+        if (whatsappEnabled) {
+          const caption = `📄 Nuovo documento\n📁 ${doc.folder}\n${doc.name}`;
+          try {
+            const { buffer, filename } = await portal.downloadDocument(doc.query, doc.name);
+            if (buffer.length <= whatsappMaxBytes) {
+              await sendWhatsAppDocument(buffer, filename, caption);
+            } else {
+              const mb = (buffer.length / 1024 / 1024).toFixed(1);
+              await sendWhatsApp(
+                `${caption}\n\n⚠️ Documento troppo grande per WhatsApp (${mb} MB).\nApri il bot Telegram per scaricarlo.`
+              );
+            }
+          } catch (e) {
+            console.error(`WhatsApp: download documento «${doc.name}» fallito:`, e.message);
+            await sendWhatsApp(`${caption}\n\nApri il bot Telegram per scaricarlo.`);
+          }
+        }
       }
     }
   }

@@ -23,6 +23,10 @@ const waRecipients = (process.env.OPENWA_RECIPIENTS || '')
 const waBaseUrl = (process.env.OPENWA_URL || '').replace(/\/$/, '');
 const waApiKey = (process.env.OPENWA_API_KEY || '').trim();
 const waSession = (process.env.OPENWA_SESSION || '').trim();
+// Limite di dimensione (MB) per allegare il documento su WhatsApp.
+// Oltre questa soglia invia solo la notifica testuale. WhatsApp accetta
+// documenti fino a ~100 MB; default prudente 64 MB, modificabile nel .env.
+const waMaxMb = Number(process.env.OPENWA_MAX_MB || 64);
 const whatsapp = {
   // Attivo solo se tutti i parametri necessari sono presenti nel .env.
   enabled: Boolean(waBaseUrl && waApiKey && waSession && waRecipients.length),
@@ -30,6 +34,8 @@ const whatsapp = {
   apiKey: waApiKey,
   session: waSession,
   recipients: waRecipients,
+  // Soglia massima in byte per l'invio dell'allegato.
+  maxBytes: Math.max(1, waMaxMb) * 1024 * 1024,
 };
 
 export const config = {
