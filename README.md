@@ -80,12 +80,18 @@ mettere **più id separati da virgola**: tutti potranno usare il bot e riceveran
 
 Oltre a Telegram, il bot può inviare le notifiche di **nuovi documenti** e **guasti/segnalazioni**
 (nuovi e cambi di stato) anche su **WhatsApp**, usando un'istanza di
-[OpenWA](https://github.com/rmyndharis/OpenWA) già installata e collegata (es. su `100.80.141.19`).
+[OpenWA](https://github.com/rmyndharis/OpenWA) già installata e collegata (es. su un host della tua rete).
+
+<p align="center">
+  <img src="docs/mockup-whatsapp.svg" alt="Notifiche WhatsApp di guasto e nuovo documento via OpenWA" width="270">
+</p>
+
+<p align="center"><em>Le stesse notifiche su WhatsApp: guasto, nuovo documento con PDF allegato e il messaggio di <code>/testwa</code>. Dati di esempio.</em></p>
 
 Aggiungi nel `.env`:
 
 ```
-OPENWA_URL='http://100.80.141.19:2785'   # indirizzo dell'istanza OpenWA (porta default 2785)
+OPENWA_URL='http://HOST_OPENWA:2785'     # indirizzo dell'istanza OpenWA (porta default 2785)
 OPENWA_API_KEY='...'                     # API key dalla dashboard OpenWA (header X-API-Key)
 OPENWA_SESSION='default'                 # nome della sessione OpenWA, già creata e avviata
 OPENWA_RECIPIENTS='393331234567'         # destinatari, separati da virgola

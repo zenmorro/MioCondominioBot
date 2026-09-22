@@ -18,7 +18,8 @@ if (!ownerIds.length) throw new Error('TELEGRAM_ID_OWNER non contiene id validi.
 // oppure chatId completi (393331234567@c.us / <gruppo>@g.us).
 const waRecipients = (process.env.OPENWA_RECIPIENTS || '')
   .split(/[\s,;]+/)
-  .map((s) => s.trim())
+  // rimuove spazi ed eventuali apici/virgolette messi attorno ai singoli valori
+  .map((s) => s.trim().replace(/^['"]+|['"]+$/g, '').trim())
   .filter(Boolean);
 const waBaseUrl = (process.env.OPENWA_URL || '').replace(/\/$/, '');
 const waApiKey = (process.env.OPENWA_API_KEY || '').trim();
